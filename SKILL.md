@@ -3,7 +3,7 @@ name: wordpress-receipts
 description: "Publish WordPress posts with API and public URL receipts."
 user-invocable: true
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   license: "MIT"
   homepage: "https://github.com/LeoStehlik/wordpress-receipts"
   openclaw:
@@ -35,7 +35,7 @@ This is a skill, not a plugin. It uses the WordPress REST API and deterministic 
 
 ## Expected Env
 
-The helper scripts accept either real environment variables or an env file passed with `--env-file`:
+The helper scripts accept an env file passed with `--env-file`. The public helpers deliberately avoid ambient environment reads so static scanners do not see hidden credential access combined with network calls:
 
 ```text
 WORDPRESS_API_BASE=https://example.com/wp-json/wp/v2

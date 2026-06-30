@@ -30,7 +30,7 @@ function readEnvFile(file) {
 
 function value(args, env, key, fallback) {
   const flag = key.toLowerCase().replaceAll('_', '-');
-  return args.get(flag) || env[key] || process.env[key] || fallback;
+  return args.get(flag) || env[key] || fallback;
 }
 
 function stripHtml(text) {
@@ -47,8 +47,8 @@ const env = readEnvFile(args.get('env-file'));
 const apiBase = value(args, env, 'WORDPRESS_API_BASE');
 const username = value(args, env, 'WORDPRESS_USERNAME');
 const password = value(args, env, 'WORDPRESS_APPLICATION_PASSWORD') || value(args, env, 'WORDPRESS_APP_PASSWORD');
-const author = Number(args.get('author') || env.WORDPRESS_AUTHOR_ID || process.env.WORDPRESS_AUTHOR_ID || 0) || undefined;
-const category = Number(args.get('category') || env.WORDPRESS_DEFAULT_CATEGORY_ID || process.env.WORDPRESS_DEFAULT_CATEGORY_ID || 0) || undefined;
+const author = Number(args.get('author') || env.WORDPRESS_AUTHOR_ID || 0) || undefined;
+const category = Number(args.get('category') || env.WORDPRESS_DEFAULT_CATEGORY_ID || 0) || undefined;
 const title = args.get('title') || (args.get('title-file') ? fs.readFileSync(args.get('title-file'), 'utf8').trim() : '');
 const content = args.get('content') || (args.get('content-file') ? fs.readFileSync(args.get('content-file'), 'utf8') : '');
 

@@ -41,9 +41,9 @@ function die(reason, details = {}) {
 
 const args = parseArgs(process.argv);
 const env = readEnvFile(args.get('env-file'));
-const apiBase = args.get('api-base') || env.WORDPRESS_API_BASE || process.env.WORDPRESS_API_BASE;
-const username = args.get('username') || env.WORDPRESS_USERNAME || process.env.WORDPRESS_USERNAME;
-const password = args.get('application-password') || env.WORDPRESS_APPLICATION_PASSWORD || process.env.WORDPRESS_APPLICATION_PASSWORD || env.WORDPRESS_APP_PASSWORD || process.env.WORDPRESS_APP_PASSWORD;
+const apiBase = args.get('api-base') || env.WORDPRESS_API_BASE;
+const username = args.get('username') || env.WORDPRESS_USERNAME;
+const password = args.get('application-password') || env.WORDPRESS_APPLICATION_PASSWORD || env.WORDPRESS_APP_PASSWORD;
 const auth = username && password ? 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64') : null;
 
 if (!apiBase && !args.get('url')) die('missing_wordpress_api_base');

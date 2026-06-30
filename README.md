@@ -17,6 +17,7 @@ openclaw skills install wordpress-receipts
 - avoids duplicate posts by checking recent published titles
 - verifies API status and public page status
 - gives cron jobs a deterministic post-run proof check
+- avoids ambient environment reads in public helper scripts; pass `--env-file` or explicit flags instead
 
 ## Required Env
 
