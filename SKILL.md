@@ -1,0 +1,113 @@
+---
+name: wordpress-receipts
+description: "Publish WordPress posts with API and public URL receipts."
+user-invocable: true
+metadata:
+  version: "0.1.0"
+  license: "MIT"
+  homepage: "https://github.com/LeoStehlik/wordpress-receipts"
+  openclaw:
+    requires:
+      bins: ["node"]
+---
+# WordPress Receipts
+
+Use this skill when publishing a WordPress post from an OpenClaw task, cron job, or agent workflow where success must mean a real public artifact exists.
+
+This is a skill, not a plugin. It uses the WordPress REST API and deterministic helper scripts, so it stays portable and auditable.
+
+## When To Use
+
+- The user asks to publish a WordPress article, reflection, update, or draft.
+- A scheduled job must publish to WordPress and prove completion.
+- A previous run produced a draft, status message, or cron success without a public URL receipt.
+- You need a post-run verifier that checks WordPress API state and the public page.
+
+## Safety Rules
+
+- Never treat cron success, model output, or a draft as publication proof.
+- Publication is complete only when the WordPress REST API returns a post ID and the public URL returns HTTP 200.
+- Do not print credentials, application passwords, tokens, cookies, or authorization headers.
+- Keep secrets in environment variables or an env file outside the skill folder.
+- Parse env files explicitly; do not rely on shell-sourcing when application passwords may contain spaces.
+- Avoid duplicate posts: check the latest published posts before creating a new one.
+- Log the receipt: title, URL, WordPress post ID, status, and public HTTP status.
+
+## Expected Env
+
+The helper scripts accept either real environment variables or an env file passed with `--env-file`:
+
+```text
+WORDPRESS_API_BASE=https://example.com/wp-json/wp/v2
+WORDPRESS_USERNAME=publisher-user
+WORDPRESS_APPLICATION_PASSWORD=application password may contain spaces
+WORDPRESS_AUTHOR_ID=123
+WORDPRESS_DEFAULT_CATEGORY_ID=1
+```
+
+Only the first three are required. Author and category can also be supplied by flags.
+
+## Publish Workflow
+
+1. Load the draft from a Markdown file or explicit title/content fields.
+2. Read WordPress env values with explicit parsing.
+3. Query recent published posts to avoid duplicates.
+4. POST JSON to the WordPress REST API.
+5. Verify the returned API object and public URL.
+6. Append or report a receipt containing title, URL, post ID, API status, and public HTTP status.
+
+Recommended command:
+
+```bash
+node scripts/wp-publish-receipt.mjs \
+  --env-file .env.wordpress \
+  --title-file draft-title.txt \
+  --content-file draft.md \
+  --author 123 \
+  --category 1
+```
+
+For one-off verification:
+
+```bash
+node scripts/wp-verify-receipt.mjs --env-file .env.wordpress --date 2026-07-01
+node scripts/wp-verify-receipt.mjs --env-file .env.wordpress --url https://example.com/post-slug/
+node scripts/wp-verify-receipt.mjs --env-file .env.wordpress --id 456
+```
+
+## Cron Guard Pattern
+
+For recurring publishing jobs, add a second scheduled proof check after the publishing window. The proof check should run `wp-verify-receipt.mjs` for the expected local date and alert on failure.
+
+Good success signal:
+
+```json
+{
+  "ok": true,
+  "id": 456,
+  "status": "publish",
+  "link": "https://example.com/post-slug/",
+  "publicStatus": 200
+}
+```
+
+Bad success signal:
+
+```text
+Cron run status: ok
+```
+
+That only proves the scheduler finished. It does not prove publication.
+
+## Output Contract
+
+When reporting back to the user, include:
+
+- title
+- URL
+- WordPress post ID
+- API status
+- public HTTP status
+- whether a duplicate was skipped
+
+Keep the report short. If publishing failed, state whether a draft exists and what exact proof is missing.
