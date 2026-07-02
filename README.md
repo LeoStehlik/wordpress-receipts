@@ -72,6 +72,39 @@ node scripts/wp-verify-receipt.mjs --url https://example.com/my-post/
 
 That turns "the job sounded fine" into "the artifact exists".
 
+## Scheduler Environment Proof
+
+The verifier is only useful if the scheduler can start it. Cron, launchd, systemd timers, and agent runners often have a much smaller environment than your terminal.
+
+For recurring jobs:
+
+- set a known `PATH` in the scheduler, or call absolute paths to `node` and any wrapper tools
+- do not rely on `.zshrc`, `.bashrc`, NVM, Homebrew, or asdf being loaded
+- test the verifier under a stripped environment
+- reload the scheduler after changes
+- run or kick the scheduled verifier once and confirm exit `0`
+
+Stripped-env smoke:
+
+```bash
+env -i HOME="$HOME" USER="$USER" PATH="/usr/bin:/bin:/usr/sbin:/sbin" \
+  /opt/homebrew/bin/node scripts/wp-verify-receipt.mjs \
+  --env-file .env.wordpress \
+  --date 2026-07-01
+```
+
+launchd example:
+
+```xml
+<key>EnvironmentVariables</key>
+<dict>
+  <key>PATH</key>
+  <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+</dict>
+```
+
+For launchd, `launchctl print` should show the loaded PATH, and a `launchctl kickstart` of the verifier job should exit `0`. Testing only from an interactive shell is not enough.
+
 ## Privacy
 
 This repository contains no private domains, paths, tokens, chat IDs, post IDs, or workspace names. The scripts are env-driven and generic.

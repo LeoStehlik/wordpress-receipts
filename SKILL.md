@@ -3,7 +3,7 @@ name: wordpress-receipts
 description: "Publish WordPress posts with API and public URL receipts."
 user-invocable: true
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   license: "MIT"
   homepage: "https://github.com/LeoStehlik/wordpress-receipts"
   openclaw:
@@ -98,6 +98,39 @@ Cron run status: ok
 ```
 
 That only proves the scheduler finished. It does not prove publication.
+
+## Scheduler Environment Proof
+
+Receipt checks only help if the scheduler can start the runtime. For recurring jobs, prove the publisher and verifier from the same scheduler environment that will run them unattended.
+
+Rules:
+
+- Set a known `PATH` in the scheduler definition, or call absolute paths to `node`, `openclaw`, and any wrapper scripts.
+- Do not rely on an interactive shell profile for Homebrew, NVM, asdf, pnpm, or OpenClaw paths.
+- Test the verifier under a stripped environment before trusting the schedule.
+- After loading or changing the scheduled job, kick or run the scheduled verifier once and confirm exit `0`.
+- Treat a watchdog that uses the same unproved runtime as unproved too.
+
+Example stripped-env smoke:
+
+```bash
+env -i HOME="$HOME" USER="$USER" PATH="/usr/bin:/bin:/usr/sbin:/sbin" \
+  /opt/homebrew/bin/node scripts/wp-verify-receipt.mjs \
+  --env-file .env.wordpress \
+  --date 2026-07-01
+```
+
+Example launchd environment block:
+
+```xml
+<key>EnvironmentVariables</key>
+<dict>
+  <key>PATH</key>
+  <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+</dict>
+```
+
+For launchd jobs, verify with `launchctl print` that the loaded job has the expected environment, then use `launchctl kickstart` or another scheduler-native run path to prove the verifier exits successfully.
 
 ## Output Contract
 
