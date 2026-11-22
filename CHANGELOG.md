@@ -1,3 +1,8 @@
+# 0.1.5
+
+- Ship the ESM helpers as standard `.js` files with an explicit package module type so ClawHub static analysis can inspect the referenced source completely.
+- Preserve command behaviour and the full mocked receipt test suite.
+
 # 0.1.4
 
 - Republish the reviewed receipt helpers through the current ClawHub scan pipeline.

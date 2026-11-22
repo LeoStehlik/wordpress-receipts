@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
-import { siteUrl, receiptUrl, requestOptions } from './receipt-url.mjs';
+import { siteUrl, receiptUrl, requestOptions } from './receipt-url.js';
 
 function parseArgs(argv) {
   const args = new Map();

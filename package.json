@@ -1,0 +1,8 @@
+{
+  "name": "wordpress-receipts-skill",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}
