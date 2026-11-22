@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs from 'node:fs';
-import { siteUrl, receiptUrl, requestOptions } from './receipt-url.js';
+const fs = require('node:fs');
+const { siteUrl, receiptUrl, requestOptions } = require('./receipt-url.js');
 
 function parseArgs(argv) {
   const args = new Map();
@@ -43,6 +43,7 @@ function die(reason, details = {}) {
   process.exit(2);
 }
 
+async function main() {
 const args = parseArgs(process.argv);
 const env = readEnvFile(args.get('env-file'));
 const apiBase = value(args, env, 'WORDPRESS_API_BASE');
@@ -119,3 +120,7 @@ const publicRes = await fetch(url, { method: 'GET', ...requestOptions() });
 const ok = publicRes.status === 200;
 console.log(JSON.stringify({ ok, action: 'published', id: post.id, status: verified.status, author: verified.author, categories: verified.categories, title, link: url, publicStatus: publicRes.status }, null, 2));
 if (!ok) process.exit(2);
+
+}
+
+main().catch((error) => die(unexpected_error, { message: error.message }));

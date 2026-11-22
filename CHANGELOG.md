@@ -1,3 +1,8 @@
+# 0.1.6
+
+- Express the zero-dependency receipt helpers as conventional CommonJS with explicit async entry points for broader static-analysis compatibility.
+- Preserve the CLI, security boundaries and all mocked network behaviour.
+
 # 0.1.5
 
 - Ship the ESM helpers as standard `.js` files with an explicit package module type so ClawHub static analysis can inspect the referenced source completely.
