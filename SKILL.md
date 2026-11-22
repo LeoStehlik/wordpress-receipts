@@ -3,7 +3,7 @@ name: wordpress-receipts
 description: "Publish WordPress posts with API and public URL receipts."
 user-invocable: true
 metadata:
-  version: "0.1.3"
+  version: "0.1.4"
   license: "MIT"
   homepage: "https://github.com/LeoStehlik/wordpress-receipts"
   openclaw:
